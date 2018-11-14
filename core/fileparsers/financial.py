@@ -1,13 +1,15 @@
 # coding=utf-8
 # file source: On Ubuntu, using chromium to open 同花顺--永利股份，select 财务指标，按报告期
 # Provide: 
-# Verify: 
+# Verify: every season, 净资产收益率-摊薄 = 每股收益/每股净资产
 
 from baseparser import BaseParser
 import datetime
 
 class FcData:
     def __init__(self):
+        self.year = 0
+        self.season = 0
         self.per_share_earnings = 0
         self.profit = 0
         self.profit_adding = 0
@@ -17,6 +19,7 @@ class FcData:
         self.sales_adding = 0
         self.per_share_asset = 0  #每股净资产
         self.asset_adding = 0   #净资产收益率
+        self.asset_adding2 = 0   #净资产收益率-摊薄
 
 #financial data are stored in self._data{}
 # _data[0] _data[1] _data[2] _data[3] --- 2009 first, second, third, forth season report data
@@ -53,6 +56,8 @@ class FinancialHistory(BaseParser):
                 i += 1
                 continue
             fd = FcData()
+            fd.year = year
+            fd.season = season
             fd.per_share_earnings = float(datalist[1][i].strip())
             fd.profit = self.parsemoney(datalist[2][i])
             fd.profit_adding = self.parseadding(datalist[3][i])
@@ -62,6 +67,7 @@ class FinancialHistory(BaseParser):
             fd.sales_adding = self.parseadding(datalist[7][i])
             fd.per_share_asset = self.parsemoney(datalist[8][i])  #每股净资产
             fd.asset_adding = self.parseadding(datalist[9][i])   #净资产收益率
+            fd.asset_adding2 = self.parseadding(datalist[10][i])   #净资产收益率
 
             self._data[index] = fd
             i += 1
@@ -105,6 +111,16 @@ class FinancialHistory(BaseParser):
         return (year, season)
 
     def verify(self):
+        for index in self._data:
+            fd = self._data[index]
+            if fd == None:
+                continue
+            if fd.per_share_asset == None or fd.per_share_earnings == None:
+                continue
+            val = fd.per_share_earnings * 100 / fd.per_share_asset
+            tmp = abs(val - fd.asset_adding2)
+            if tmp > 1:
+                print "Warning: in ", fd.year, fd.season, fd.asset_adding2, val, ": diff is " + str(tmp)
         return True
 
     def getindex(self, year, season):
@@ -127,9 +143,10 @@ class FinancialHistory(BaseParser):
         for y in range(2009, 2018 + 1):
 #            for s in range(0, 4):
 #                print y, s, str(self.getindex(y, s))
-            data = self.get_year_report(y)
-            if data != None:
-                print y, data.per_share_earnings
+#            data = self.get_year_report(y)
+#            if data != None:
+#                print y, data.per_share_earnings
+            pass
 
 
 if __name__ == "__main__":
