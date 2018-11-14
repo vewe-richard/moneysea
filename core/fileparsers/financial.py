@@ -139,6 +139,61 @@ class FinancialHistory(BaseParser):
         index = self.getindex(year, 3)
         return self._data[index]
 
+    # interface for public calling
+    # print financial data by year
+    def printYearFinancial(self):
+        for index in range(len(self._data) - 1, -1, -1):
+            fd = self._data[index]
+            if fd == None:
+                continue
+            if fd.season != 3:
+                continue
+            print fd.year, fd.per_share_earnings, fd.profit, fd.profit_adding
+
+    def getSeasonFinacial(self, year, season):
+        index = self.getindex(year, season)
+        if index == -1:
+            return None
+        if season == 0:
+            return self._data[index]
+        previndex = self.getindex(year, season - 1)
+        if previndex == -1:
+            return None
+
+        fd = self._data[index]
+        prevfd = self._data[previndex]
+
+        if fd == None or prevfd == None:
+            return None
+        curr = FcData()
+        curr.year = year
+        curr.season = season
+        try:
+            curr.per_share_earnings = fd.per_share_earnings - prevfd.per_share_earnings
+            curr.profit = fd.profit - prevfd.profit
+#        curr.profit_adding = 
+            curr.profit2 = fd.profit2 - prevfd.profit2
+#        curr.profit2_adding =
+            curr.sales = fd.sales - prevfd.sales
+#        curr.sales_adding = 
+            curr.per_share_asset = fd.per_share_asset
+#       fd.asset_adding = 
+#       fd.asset_adding2 =
+        except:
+            pass
+        return curr        
+
+    def printSeasonFinacial(self):
+        for index in range(len(self._data) - 1, -1, -1):
+            fd = self._data[index]
+            if fd == None:
+                continue
+            sf = self.getSeasonFinacial(fd.year, fd.season)
+            if sf == None:
+                continue
+            print fd.year, fd.season, ":", sf.per_share_earnings, sf.profit, sf.profit2, sf.sales, sf.per_share_asset
+        pass
+
     def test(self):
         for y in range(2009, 2018 + 1):
 #            for s in range(0, 4):
@@ -153,5 +208,7 @@ if __name__ == "__main__":
     fh = FinancialHistory("tmp/ylgf-finance")
     fh.doparse()
     fh.test()
+#    fh.printYearFinancial()
+    fh.printSeasonFinacial()
     pass
 
