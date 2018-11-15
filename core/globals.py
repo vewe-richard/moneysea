@@ -1,6 +1,6 @@
 from utils.stockidname import StockIdName
 
-class Global:
+class Globals:
     INSTANCE = None
 
     def __init__(self):
@@ -11,12 +11,12 @@ class Global:
     @classmethod
     def get_instance(cls):
         if cls.INSTANCE is None:
-            cls.INSTANCE = Global()
+            cls.INSTANCE = Globals()
         return cls.INSTANCE
 
 
 
 if __name__ == "__main__":
-    glb = Global.get_instance()
+    glb = Globals.get_instance()
     print glb.sin.getname(300230)
     pass
