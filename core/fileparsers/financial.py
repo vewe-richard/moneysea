@@ -74,6 +74,23 @@ class FinancialHistory(BaseParser):
         if not self.verify():
             raise ValueError(self._filepath + " parsing verifying failed")
 
+        self._oldest = 100000
+        self._latest = 0
+        for index in self._data:
+            fd = self._data[index]
+            if fd == None:
+                continue
+            if index > self._latest:
+                self._latest = index
+            if index < self._oldest:
+                self._oldest = index
+
+    def getlatest(self):
+        return self._data[self._latest]
+
+    def getoldest(self):
+        return self._data[self._oldest]
+
     def parseadding(self, text):
         ret = text.replace("%", "")
         try:
@@ -120,7 +137,7 @@ class FinancialHistory(BaseParser):
             val = fd.per_share_earnings * 100 / fd.per_share_asset
             tmp = abs(val - fd.asset_adding2)
             if tmp > 1:
-                print "Warning: in ", fd.year, fd.season, fd.asset_adding2, val, ": diff is " + str(tmp)
+                print "Warning: 净资产收益率 in ", fd.year, "season ", fd.season, ",", ": diff is " + str(tmp) + "%"
         return True
 
     def getindex(self, year, season):
@@ -137,6 +154,10 @@ class FinancialHistory(BaseParser):
 
     def get_year_report(self, year):
         index = self.getindex(year, 3)
+        return self._data[index]
+
+    def getreport(self, year, season):
+        index = self.getindex(year, season)
         return self._data[index]
 
     # interface for public calling
