@@ -15,6 +15,8 @@ class Parser:
         pass
 
     def doparse(self):
+        if self._stockpath[-1] != "/": 
+            self._stockpath += "/"
         items = os.path.basename(os.path.dirname(self._stockpath)).split("-")
         self._id = int(items[0])
         self._name = Globals.get_instance().sin.getname(self._id)
@@ -170,7 +172,18 @@ class Parser:
 
         earnings5 = e * ((1 + adding)**5)
         y5 = earnings5*100 / 10
-        print "%9s,%8s,%8.2f,%6.2f,%8.0f,%7.2f,%5s,%7.2f,%8.2f,%8.2f" % (n, i, e, p, t, a, "flag", adding, y2, y5)
+        print "%9s,%8s,%8.2f,%6.2f,%8.0f,%7.2f,%5s,%7.2f,%8.2f,%8.2f" % (n, i, e, p, t, a, self.getFlag(), adding, y2, y5)
+
+    def getFlag(self):
+        a = ""
+        for v in  (self._continued[0], self._increase_fasten[0], self._increase_fasten[1]):
+            if v:
+                a += "T"
+            else:
+                a += "F"
+        return a
+
+
 
     def getadding(self):
         if self.adding["manual"] != None:

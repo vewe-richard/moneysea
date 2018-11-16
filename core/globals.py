@@ -19,6 +19,10 @@ class Globals:
         self.holded = HoldedStocks(current)
         self.holded.doparse()
 
+        self.stockspath = {}
+        self.initstockspath()
+
+
 
     @classmethod
     def get_instance(cls):
@@ -50,6 +54,18 @@ class Globals:
             total = 0
 
         return total
+
+    def stockpath(self, idx):
+        try:
+            return self.stockspath[idx]
+        except:
+            return None
+
+    def initstockspath(self):
+        for f in listdir(Config.STOCKS_PATH):
+            items = f.split("-")
+            if len(items) >= 2:
+                self.stockspath[items[0]] = Config.STOCKS_PATH + "/" + f
 
 
 

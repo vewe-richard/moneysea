@@ -11,6 +11,8 @@ class Config:
 
     CURRENT_HOLDED_PATH = "input/holded"
 
+    STOCKS_PATH = "input/stocks"
+
     #持续增长考察年份数
     CONTINUE_GROW_YEARS = 6
     #持续增长容许最多亏损
