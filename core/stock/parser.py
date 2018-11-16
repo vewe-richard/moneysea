@@ -155,9 +155,35 @@ class Parser:
     def outputSimple(self):
         print ""
         print ""
-        print "%40s"%("flag:"), "稳定增长|365增长|报告季增长"
-        title = "%9s,%7s,%8s,%6s,%8s,%7s,%5s,%7s,%8s,%8s" % ("stockname", "id", "earning", "price", "total", "asset%", "flag", "adding", "2Yprice", "5Yprice")
-        print title
+        print self.getTitle()
+
+        s = self.getSummer()
+        print self.summerFormat() % self.formatdata(s)
+
+    def getFlag(self):
+        a = ""
+        for v in  (self._continued[0], self._increase_fasten[0], self._increase_fasten[1]):
+            if v:
+                a += "T"
+            else:
+                a += "F"
+        return a
+
+    @classmethod
+    def getTitle(self):
+        title = "%40s"%("flag:") + "稳定增长|365增长|报告季增长\n"
+        title += "%9s,%7s,%8s,%6s,%8s,%7s,%5s,%7s,%8s,%8s" % ("stockname", "id", "earning", "price", "total", "asset%", "flag", "adding", "2Yprice", "5Yprice")
+        return title
+
+    @classmethod
+    def summerFormat(self):
+        return "%9s,%8s,%8.2f,%6.2f,%8.0f,%7.2f,%5s,%7.2f,%8.2f,%8.2f"
+
+    @classmethod
+    def formatdata(self, s):
+        return (s["stockname"], s["id"], s["earning"], s["price"], s["total"], s["asset%"], s["flag"], s["adding"], s["2Yprice"], s["5Yprice"])
+
+    def getSummer(self):
         n = self.getname()
         i = self.getid()
         e = self.getpershareearnings()
@@ -172,16 +198,7 @@ class Parser:
 
         earnings5 = e * ((1 + adding)**5)
         y5 = earnings5*100 / 10
-        print "%9s,%8s,%8.2f,%6.2f,%8.0f,%7.2f,%5s,%7.2f,%8.2f,%8.2f" % (n, i, e, p, t, a, self.getFlag(), adding, y2, y5)
-
-    def getFlag(self):
-        a = ""
-        for v in  (self._continued[0], self._increase_fasten[0], self._increase_fasten[1]):
-            if v:
-                a += "T"
-            else:
-                a += "F"
-        return a
+        return {"stockname":n, "id":i, "earning":e, "price":p, "total":t, "asset%":a, "flag":self.getFlag(), "adding":adding, "2Yprice":y2, "5Yprice":y5}
 
 
 
