@@ -43,6 +43,14 @@ class Globals:
 
         return price
 
+    def getstocktotal(self, idx):
+        try:
+            total = float(self.holded.holded[str(idx)][6])
+        except:
+            total = 0
+
+        return total
+
 
 
 

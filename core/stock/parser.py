@@ -2,6 +2,7 @@
 import os
 from globals import Globals
 from fileparsers.financial import FinancialHistory
+from fileparsers.note import Note
 from common import Common
 from config import Config
 
@@ -53,6 +54,15 @@ class Parser:
         self.adding["profit2"] = self._latestfd.profit2_adding / 100
         #扣非净利率平均增长
         self.adding["average profit2"] = self.average_profit2_adding()
+
+        note = Note(os.path.dirname(self._stockpath) + "/note.xml")
+        try:
+            note.doparse()
+            self._note = note._note
+            self.adding["manual"] = note._adding
+        except:
+            self._note = None
+            self.adding["manual"] = None
 
     def increaseAdding(self):
         return (self.adding["adjacent 365"] >= self._continued[1], self.adding["in report"] >= self.adding["adjacent 365"])
@@ -120,27 +130,58 @@ class Parser:
         pass
 
     def outputVerbose(self):
-        earnings = psr.getpershareearnings()
-        price = Globals.get_instance().getstockprice(psr.getid())
+        earnings = self.getpershareearnings()
+        price = Globals.get_instance().getstockprice(self.getid())
         print ""
-        print psr.getname(), "(", psr.getid(), ")"
+        print self.getname(), "(", self.getid(), ")"
         print "Price:", price
-        print "每股收益: %7.3f"%earnings, "\t折算利率:%6.2f"%(earnings/price),"\t区间[%15, %10, %5]:", "[%6.2f %6.2f %6.2f]"%(psr._pricesRange[0], psr._pricesRange[1], psr._pricesRange[2])
-        print "净资产收益率: %6.2f"%psr._asset_adding2, "\t平均净资产收益率: %6.2f"%psr._average_asset_adding2
-        print "稳定增长:", psr._continued[0], "\t\t365增长加快:", psr._increase_fasten[0], "\t报告季增长加快:", psr._increase_fasten[1]
+        print "每股收益: %7.3f"%earnings, "\t折算利率:%6.2f"%(earnings/price),"\t区间[%15, %10, %5]:", "[%6.2f %6.2f %6.2f]"%(self._pricesRange[0], self._pricesRange[1], self._pricesRange[2])
+        print "净资产收益率: %6.2f"%self._asset_adding2, "\t平均净资产收益率: %6.2f"%self._average_asset_adding2
+        print "稳定增长:", self._continued[0], "\t\t365增长加快:", self._increase_fasten[0], "\t报告季增长加快:", self._increase_fasten[1]
 
         print ""
-        psr.forcast(earnings, price, "报告季增长", psr.adding["in report"])
-        psr.forcast(earnings, price, "365增长", psr.adding["adjacent 365"])
-        psr.forcast(earnings, price, "平均净利润增长", psr._continued[1])
+        self.forcast(earnings, price, "报告季增长", self.adding["in report"])
+        self.forcast(earnings, price, "365增长", self.adding["adjacent 365"])
+        self.forcast(earnings, price, "平均净利润增长", self._continued[1])
 
-        psr.forcast(earnings, price, "报告季扣非净利润增长", psr.adding["profit2"])
-        psr.forcast(earnings, price, "平均扣非净利润增长", psr.adding["average profit2"])
+        self.forcast(earnings, price, "报告季扣非净利润增长", self.adding["profit2"])
+        self.forcast(earnings, price, "平均扣非净利润增长", self.adding["average profit2"])
+        self.forcast(earnings, price, "综合分析增长", self.adding["manual"])
+
+        print self._note
+
+    def outputSimple(self):
+        print ""
+        print ""
+        print "%40s"%("flag:"), "稳定增长|365增长|报告季增长"
+        title = "%9s,%7s,%8s,%6s,%8s,%7s,%5s,%7s,%8s,%8s" % ("stockname", "id", "earning", "price", "total", "asset%", "flag", "adding", "2Yprice", "5Yprice")
+        print title
+        n = self.getname()
+        i = self.getid()
+        e = self.getpershareearnings()
+        p = Globals.get_instance().getstockprice(self.getid())
+        t = Globals.get_instance().getstocktotal(self.getid())
+        a = self._asset_adding2
+
+        adding = self.getadding()
+
+        earnings2 = e * ((1 + adding)**2)
+        y2 = earnings2*100 / 10  #对应10%收益的价格
+
+        earnings5 = e * ((1 + adding)**5)
+        y5 = earnings5*100 / 10
+        print "%9s,%8s,%8.2f,%6.2f,%8.0f,%7.2f,%5s,%7.2f,%8.2f,%8.2f" % (n, i, e, p, t, a, "flag", adding, y2, y5)
+
+    def getadding(self):
+        if self.adding["manual"] != None:
+            return self.adding["manual"]
+
 
 
 if __name__ == "__main__":
     psr = Parser("input/stocks/300230-ylgf/")
     psr.outputVerbose()
+    psr.outputSimple()
 
 
     pass
