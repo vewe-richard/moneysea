@@ -9,6 +9,8 @@ class Config:
     STOCK_ID_NAME_MAP_SZ = "input/common/stock_id_name_map/sz"
     STOCK_ID_NAME_MAP_OPEN = "input/common/stock_id_name_map/open"
 
+    CURRENT_HOLDED_PATH = "input/holded"
+
     #持续增长考察年份数
     CONTINUE_GROW_YEARS = 6
     #持续增长容许最多亏损

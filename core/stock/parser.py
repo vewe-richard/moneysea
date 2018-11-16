@@ -69,15 +69,14 @@ class Parser:
                 print y, "grow is unsatisfied, it's ", adding
                 continued = False
         startprofit = self._fh.get_year_report(start - 1).profit
-        average = ((self._fh.get_year_report(end - 1).profit - startprofit)/startprofit) ** (1.0 / Config.CONTINUE_GROW_YEARS) - 1
+        average = (self._fh.get_year_report(end - 1).profit/startprofit) ** (1.0 / Config.CONTINUE_GROW_YEARS) - 1
         return (continued, average)
 
     def average_profit2_adding(self):
         end = self._latestfd.year
         start = self._latestfd.year - Config.CONTINUE_GROW_YEARS
         startprofit = self._fh.get_year_report(start - 1).profit2
-        print startprofit, self._fh.get_year_report(end - 1).profit2, Config.CONTINUE_GROW_YEARS
-        average = ((self._fh.get_year_report(end - 1).profit2 - startprofit)/startprofit) ** (1.0 / Config.CONTINUE_GROW_YEARS) - 1
+        average = (self._fh.get_year_report(end - 1).profit2/startprofit) ** (1.0 / Config.CONTINUE_GROW_YEARS) - 1
         return average
 
         #最近365天净利润 = 最新季报净利润 + 上一年年报净利润 - 上一年同季净利润
@@ -104,17 +103,44 @@ class Parser:
     def getname(self):
         return self._name
 
+    def forcast(self, earnings, price, title, adding):
+        print title + ":%6.2f"%(adding)
+
+        earnings2 = earnings * ((1 + adding)**2)
+        price10 = earnings2*100 / 10  #对应10%收益的价格
+        avg = ((price10 /price) ** (1.0 / 2)) - 1
+        print "两年预期每股收益:%6.2f"%earnings2, "\t[10%", "Price]: %6.2f"%price10, "年均增长: %6.2f"%avg
+
+        earnings5 = earnings * ((1 + adding)**5)
+        price10 = earnings5*100 / 10
+        avg = ((price10/price) ** (1.0 / 5)) - 1
+        print "五年预期每股收益:%6.2f"%earnings5, "\t[10%", "Price]: %6.2f"%price10, "年均增长: %6.2f"%avg
+
+        print ""
+        pass
+
+    def outputVerbose(self):
+        earnings = psr.getpershareearnings()
+        price = Globals.get_instance().getstockprice(psr.getid())
+        print ""
+        print psr.getname(), "(", psr.getid(), ")"
+        print "Price:", price
+        print "每股收益: %7.3f"%earnings, "\t折算利率:%6.2f"%(earnings/price),"\t区间[%15, %10, %5]:", "[%6.2f %6.2f %6.2f]"%(psr._pricesRange[0], psr._pricesRange[1], psr._pricesRange[2])
+        print "净资产收益率: %6.2f"%psr._asset_adding2, "\t平均净资产收益率: %6.2f"%psr._average_asset_adding2
+        print "稳定增长:", psr._continued[0], "\t\t365增长加快:", psr._increase_fasten[0], "\t报告季增长加快:", psr._increase_fasten[1]
+
+        print ""
+        psr.forcast(earnings, price, "报告季增长", psr.adding["in report"])
+        psr.forcast(earnings, price, "365增长", psr.adding["adjacent 365"])
+        psr.forcast(earnings, price, "平均净利润增长", psr._continued[1])
+
+        psr.forcast(earnings, price, "报告季扣非净利润增长", psr.adding["profit2"])
+        psr.forcast(earnings, price, "平均扣非净利润增长", psr.adding["average profit2"])
+
 
 if __name__ == "__main__":
     psr = Parser("input/stocks/300230-ylgf/")
+    psr.outputVerbose()
 
-    print psr.getid()
-    print psr.getname()
-    print psr.getpershareearnings()
-    print psr._pricesRange
-    print psr.adding
-    print psr._continued
-    print psr._increase_fasten, "(年度增长加快，季度增长加快)"
-    print psr._asset_adding2
-    print psr._average_asset_adding2
+
     pass
