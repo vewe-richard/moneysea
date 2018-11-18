@@ -58,7 +58,10 @@ class FinancialHistory(BaseParser):
             fd = FcData()
             fd.year = year
             fd.season = season
-            fd.per_share_earnings = float(datalist[1][i].strip())
+            try:
+                fd.per_share_earnings = float(datalist[1][i].strip())
+            except:
+                break
             fd.profit = self.parsemoney(datalist[2][i])
             fd.profit_adding = self.parseadding(datalist[3][i])
             fd.profit2 = self.parsemoney(datalist[4][i])        #扣非净利润

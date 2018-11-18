@@ -40,16 +40,18 @@ class Globals:
 
     def getstockprice(self, idx):
         #try find in current
+        s = "%06d"%(idx)
         try:
-            price = float(self.holded.holded[str(idx)][4])
+            price = float(self.holded.holded[s][4])
         except:
             price = 0
 
         return price
 
     def getstocktotal(self, idx):
+        s = "%06d"%(idx)
         try:
-            total = float(self.holded.holded[str(idx)][6])
+            total = float(self.holded.holded[s][6])
         except:
             total = 0
 

@@ -12,6 +12,7 @@ class Core:
         for idx in holded:
             stockdir = Globals.get_instance().stockpath(holded[idx][0])
             if stockdir == None:
+                liststocks[idx] = None
                 continue
             psr = Parser(stockdir)
 #            psr.outputSimple()
@@ -19,6 +20,9 @@ class Core:
 
         print Parser.getTitle()
         for summer in liststocks:
+            if liststocks[summer] == None:
+                print "%9s,%8s"%(Globals.get_instance().sin.getname(int(summer)), summer)
+                continue
             s = liststocks[summer]
             print Parser.summerFormat() % Parser.formatdata(s)
         pass

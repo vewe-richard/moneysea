@@ -88,6 +88,9 @@ class Parser:
         end = self._latestfd.year
         start = self._latestfd.year - Config.CONTINUE_GROW_YEARS
         startprofit = self._fh.get_year_report(start - 1).profit2
+        print "profit 2", self._fh.get_year_report(end - 1).profit2, 
+        if self._fh.get_year_report(end - 1).profit2 <= 0 or startprofit <= 0:
+            return -0.99
         average = (self._fh.get_year_report(end - 1).profit2/startprofit) ** (1.0 / Config.CONTINUE_GROW_YEARS) - 1
         return average
 
@@ -116,6 +119,10 @@ class Parser:
         return self._name
 
     def forcast(self, earnings, price, title, adding):
+        if adding == None:
+            return
+        if earnings < 0:
+            return
         print title + ":%6.2f"%(adding)
 
         earnings2 = earnings * ((1 + adding)**2)
@@ -205,6 +212,17 @@ class Parser:
     def getadding(self):
         if self.adding["manual"] != None:
             return self.adding["manual"]
+        else:
+            #return smallest
+            small = 1000
+            for a in self.adding:
+                if self.adding[a] != None and self.adding[a] < small:
+                    small = self.adding[a]
+
+            if self._continued[1] < small:
+                small = self._continued[1]
+            return small
+
 
 
 
