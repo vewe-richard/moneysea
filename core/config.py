@@ -13,6 +13,9 @@ class Config:
 
     STOCKS_PATH = "input/stocks"
 
+    SELECTED_FILE = "selected"
+    SELECTED_PATH = "input/selected/selected"
+
     #持续增长考察年份数
     CONTINUE_GROW_YEARS = 6
     #持续增长容许最多亏损

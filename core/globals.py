@@ -5,6 +5,7 @@ from os import listdir
 from os.path import isfile, join
 
 from config import Config
+from fileparsers.ranklist import RankList
 
 class Globals:
     INSTANCE = None
@@ -22,6 +23,17 @@ class Globals:
         self.stockspath = {}
         self.initstockspath()
 
+        try:
+            self.rl = RankList(Config.SELECTED_PATH)
+            self.rl.doparse()
+        except:
+            self.rl = None
+
+    def selectedItems(self):
+        if self.rl != None:
+            return self.rl.items
+        else:
+            return None
 
 
     @classmethod

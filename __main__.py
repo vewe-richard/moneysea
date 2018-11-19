@@ -2,6 +2,9 @@
 import sys
 import getopt
 from mscore import Core
+import os
+from config import Config
+from shutil import copyfile
 
 
 
@@ -10,10 +13,11 @@ class MoneySea:
         pass
 
     def usage(self):
-        print "python __main__.py [-h | -s filepath | -v stockdir]"
+        print "python __main__.py [-h | -s | -S filepath | -v stockdir]"
         print "         -h: show holded stocks in simple format"
-        print "         -s: show selected stocks in filepath"
+        print "         -s: show selected stocks"
         print "         -v: show verbose info of this stock"
+        print "         -S: set selected stocks file"
         print ""
 
     def run(self):
@@ -23,7 +27,7 @@ class MoneySea:
 
     def input(self):
         try:
-            opts, args = getopt.getopt(sys.argv[1:], "hsv", [])
+            opts, args = getopt.getopt(sys.argv[1:], "hsv:S:", [])
         except:
             self.usage()
             sys.exit(2)
@@ -32,9 +36,15 @@ class MoneySea:
             if o == "-h":
                 self._core.holded()
             elif o == "-s":
-                self._core.selected(args[0])
+                self._core.selected()
             elif o == "-v":
-                self._core.verbose(args[0])
+                self._core.verbose(a)
+            elif o == "-S":
+                try:
+                    os.unlink(Config.SELECTED_PATH)
+                except:
+                    pass
+                copyfile(a, Config.SELECTED_PATH)
         pass
 
 
