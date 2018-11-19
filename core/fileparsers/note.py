@@ -15,6 +15,8 @@ class Note(BaseParser):
                 self._adding = float(child.text)
             elif child.tag == "note":
                 self._note = child.text
+            elif child.tag == "summary":
+                self._summary = child.text.strip()
         pass
 
     def verify(slef):

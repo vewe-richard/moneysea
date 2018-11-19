@@ -4,6 +4,7 @@ import getopt
 from mscore import Core
 
 
+
 class MoneySea:
     def __init__(self):
         pass
@@ -38,6 +39,9 @@ class MoneySea:
 
 
 if __name__ == "__main__":
+    if sys.getdefaultencoding() != 'utf-8':
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
     ms = MoneySea()
     ms.run()
 

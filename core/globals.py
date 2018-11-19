@@ -67,7 +67,7 @@ class Globals:
         for f in listdir(Config.STOCKS_PATH):
             items = f.split("-")
             if len(items) >= 2:
-                self.stockspath[items[0]] = Config.STOCKS_PATH + "/" + f
+                self.stockspath[items[1]] = Config.STOCKS_PATH + "/" + f
 
 
 

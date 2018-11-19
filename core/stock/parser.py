@@ -18,7 +18,7 @@ class Parser:
         if self._stockpath[-1] != "/": 
             self._stockpath += "/"
         items = os.path.basename(os.path.dirname(self._stockpath)).split("-")
-        self._id = int(items[0])
+        self._id = int(items[1])
         self._name = Globals.get_instance().sin.getname(self._id)
 
         self._fh = FinancialHistory(self._stockpath + "/finance")
@@ -62,9 +62,11 @@ class Parser:
             note.doparse()
             self._note = note._note
             self.adding["manual"] = note._adding
+            self._summary = note._summary
         except:
             self._note = None
             self.adding["manual"] = None
+            self._summary = ""
 
     def increaseAdding(self):
         return (self.adding["adjacent 365"] >= self._continued[1], self.adding["in report"] >= self.adding["adjacent 365"])
@@ -88,7 +90,7 @@ class Parser:
         end = self._latestfd.year
         start = self._latestfd.year - Config.CONTINUE_GROW_YEARS
         startprofit = self._fh.get_year_report(start - 1).profit2
-        print "profit 2", self._fh.get_year_report(end - 1).profit2, 
+#        print "profit 2", self._fh.get_year_report(end - 1).profit2, 
         if self._fh.get_year_report(end - 1).profit2 <= 0 or startprofit <= 0:
             return -0.99
         average = (self._fh.get_year_report(end - 1).profit2/startprofit) ** (1.0 / Config.CONTINUE_GROW_YEARS) - 1
@@ -179,16 +181,16 @@ class Parser:
     @classmethod
     def getTitle(self):
         title = "%40s"%("flag:") + "稳定增长|365增长|报告季增长\n"
-        title += "%9s,%7s,%8s,%6s,%8s,%7s,%5s,%7s,%8s,%8s" % ("stockname", "id", "earning", "price", "total", "asset%", "flag", "adding", "2Yprice", "5Yprice")
+        title += "%9s,%7s,%8s,%6s,%8s,%7s,%5s,%7s,%8s,%8s,\t%s" % ("stockname", "id", "earning", "price", "total", "asset%", "flag", "adding", "2Yprice", "p2adding", "summary")
         return title
 
     @classmethod
     def summerFormat(self):
-        return "%9s,%8s,%8.2f,%6.2f,%8.0f,%7.2f,%5s,%7.2f,%8.2f,%8.2f"
+        return "%9s,%8s,%8.2f,%6.2f,%8.0f,%7.2f,%5s,%7.2f,%8.2f,%8.2f,\t%s"
 
     @classmethod
     def formatdata(self, s):
-        return (s["stockname"], s["id"], s["earning"], s["price"], s["total"], s["asset%"], s["flag"], s["adding"], s["2Yprice"], s["5Yprice"])
+        return (s["stockname"], s["id"], s["earning"], s["price"], s["total"], s["asset%"], s["flag"], s["adding"], s["2Yprice"], s["p2adding"], s["summary"])
 
     def getSummer(self):
         n = self.getname()
@@ -203,9 +205,14 @@ class Parser:
         earnings2 = e * ((1 + adding)**2)
         y2 = earnings2*100 / 10  #对应10%收益的价格
 
-        earnings5 = e * ((1 + adding)**5)
-        y5 = earnings5*100 / 10
-        return {"stockname":n, "id":i, "earning":e, "price":p, "total":t, "asset%":a, "flag":self.getFlag(), "adding":adding, "2Yprice":y2, "5Yprice":y5}
+#        earnings5 = e * ((1 + adding)**5)
+#        y5 = earnings5*100 / 10
+        if y2 < 0:
+            p2adding = -0.99
+        else:
+            p2adding = ((y2 / p) ** (1.0 / 2)) - 1
+        
+        return {"stockname":n, "id":i, "earning":e, "price":p, "total":t, "asset%":a, "flag":self.getFlag(), "adding":adding, "2Yprice":y2, "p2adding":p2adding, "summary":self._summary}
 
 
 

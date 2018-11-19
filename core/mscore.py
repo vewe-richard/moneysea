@@ -1,3 +1,4 @@
+# coding=utf-8
 from stock.parser import Parser
 from globals import Globals
 
