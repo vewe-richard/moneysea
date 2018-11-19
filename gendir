@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if [ ! -d input/stocks/$1 ]; then
+    mkdir input/stocks/$1 || exit 1
+    cp input/stocks/note.xml input/stocks/$1
+    vim input/stocks/$1/finance
+fi
+python . -v input/stocks/$1
+echo vim input/stocks/$1/note.xml
+echo python . -h
+
