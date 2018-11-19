@@ -54,6 +54,8 @@ class Parser:
         self._average_asset_adding2 = self.getAverageAssetAdding2()
         #扣非净利率增长
         self.adding["profit2"] = self._latestfd.profit2_adding / 100
+        if self.adding["profit2"] < -0.9999:            #skip such stupid data
+            self.adding["profit2"] = -0.9999
         #扣非净利率平均增长
         self.adding["average profit2"] = self.average_profit2_adding()
 
@@ -75,25 +77,47 @@ class Parser:
         continued = True
         end = self._latestfd.year
         start = self._latestfd.year - Config.CONTINUE_GROW_YEARS
+        ycount = 0
+        ystart = start
         for y in range(start, end):
+            old2 = self._fh.get_year_report(y - 2)
             old = self._fh.get_year_report(y - 1)
             val = self._fh.get_year_report(y)
+            if old2 == None:
+                continue
+
+            ycount += 1
+            if ycount == 1:
+                ystart = y
+
             adding = (val.profit - old.profit)/old.profit
             if adding < Config.ALLOW_MAX_LOSS:
                 print y, "grow is unsatisfied, it's ", adding
                 continued = False
-        startprofit = self._fh.get_year_report(start - 1).profit
-        average = (self._fh.get_year_report(end - 1).profit/startprofit) ** (1.0 / Config.CONTINUE_GROW_YEARS) - 1
+
+        startprofit = self._fh.get_year_report(ystart - 1).profit
+        average = (self._fh.get_year_report(end - 1).profit/startprofit) ** (1.0 / ycount) - 1
         return (continued, average)
 
     def average_profit2_adding(self):
         end = self._latestfd.year
         start = self._latestfd.year - Config.CONTINUE_GROW_YEARS
-        startprofit = self._fh.get_year_report(start - 1).profit2
+
+        ycount = 0
+        ystart = start
+        for y in range(start, end):
+            old = self._fh.get_year_report(y - 1)
+            if old == None:
+                continue
+            ycount += 1
+            if ycount == 1:
+                ystart = y
+
+        startprofit = self._fh.get_year_report(ystart - 1).profit2
 #        print "profit 2", self._fh.get_year_report(end - 1).profit2, 
         if self._fh.get_year_report(end - 1).profit2 <= 0 or startprofit <= 0:
             return -0.99
-        average = (self._fh.get_year_report(end - 1).profit2/startprofit) ** (1.0 / Config.CONTINUE_GROW_YEARS) - 1
+        average = (self._fh.get_year_report(end - 1).profit2/startprofit) ** (1.0 / ycount) - 1
         return average
 
         #最近365天净利润 = 最新季报净利润 + 上一年年报净利润 - 上一年同季净利润
@@ -106,10 +130,14 @@ class Parser:
         end = self._latestfd.year
         start = self._latestfd.year - Config.CONTINUE_GROW_YEARS
         total = 0
+        ycount = 0
         for y in range(start, end):
             val = self._fh.get_year_report(y)
+            if val == None:
+                continue
+            ycount += 1
             total += val.asset_adding2
-        return total / 6 / 100
+        return total / ycount / 100
 
     def getpershareearnings(self):
         return self._pershareearnings
@@ -181,16 +209,16 @@ class Parser:
     @classmethod
     def getTitle(self):
         title = "%40s"%("flag:") + "稳定增长|365增长|报告季增长\n"
-        title += "%9s,%7s,%8s,%6s,%8s,%7s,%5s,%7s,%8s,%8s,\t%s" % ("stockname", "id", "earning", "price", "total", "asset%", "flag", "adding", "2Yprice", "p2adding", "summary")
+        title += "%9s,%7s,%8s,%6s,%8s,%7s,%5s,%7s,%8s,%8s,%8s,\t%s" % ("stockname", "id", "earning", "price", "total", "asset%", "flag", "adding", "2Yprice", "p2adding", "p5adding", "summary")
         return title
 
     @classmethod
     def summerFormat(self):
-        return "%9s,%8s,%8.2f,%6.2f,%8.0f,%7.2f,%5s,%7.2f,%8.2f,%8.2f,\t%s"
+        return "%9s,%8s,%8.2f,%6.2f,%8.0f,%7.2f,%5s,%7.2f,%8.2f,%8.2f,%8.2f,\t%s"
 
     @classmethod
     def formatdata(self, s):
-        return (s["stockname"], s["id"], s["earning"], s["price"], s["total"], s["asset%"], s["flag"], s["adding"], s["2Yprice"], s["p2adding"], s["summary"])
+        return (s["stockname"], s["id"], s["earning"], s["price"], s["total"], s["asset%"], s["flag"], s["adding"], s["2Yprice"], s["p2adding"], s["p5adding"], s["summary"])
 
     def getSummer(self):
         n = self.getname()
@@ -204,15 +232,19 @@ class Parser:
 
         earnings2 = e * ((1 + adding)**2)
         y2 = earnings2*100 / 10  #对应10%收益的价格
-
-#        earnings5 = e * ((1 + adding)**5)
-#        y5 = earnings5*100 / 10
         if y2 < 0:
             p2adding = -0.99
         else:
             p2adding = ((y2 / p) ** (1.0 / 2)) - 1
+
+        earnings5 = e * ((1 + adding)**5)
+        y5 = earnings5*100 / 10
+        if y5 < 0:
+            p5adding = -0.99
+        else:
+            p5adding = ((y5 / p) ** (1.0 / 5)) - 1
         
-        return {"stockname":n, "id":i, "earning":e, "price":p, "total":t, "asset%":a, "flag":self.getFlag(), "adding":adding, "2Yprice":y2, "p2adding":p2adding, "summary":self._summary}
+        return {"stockname":n, "id":i, "earning":e, "price":p, "total":t, "asset%":a, "flag":self.getFlag(), "adding":adding, "2Yprice":y2, "p2adding":p2adding, "p5adding":p5adding, "summary":self._summary}
 
 
 

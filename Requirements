@@ -1,3 +1,4 @@
 1. 持有的股票中，支持仅仅显示金额较大的，或仅仅显示金额较小的股票
-2. input/stocks下的股票命名，采用 拼音-id
+2. input/stocks下的股票命名，采用 拼音-id ----------------------------- Done
+3. quote.stockstar.com/stock/ranklist_a_3_1_1.html, 这个提供了各种股票的当前价格, 而且可以用爬虫抓下来 “python爬虫成长之路"
 
