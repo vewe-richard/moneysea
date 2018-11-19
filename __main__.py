@@ -5,6 +5,7 @@ from mscore import Core
 import os
 from config import Config
 from shutil import copyfile
+from globals import Globals
 
 
 
@@ -13,11 +14,12 @@ class MoneySea:
         pass
 
     def usage(self):
-        print "python __main__.py [-h | -s | -S filepath | -v stockdir]"
+        print "python __main__.py [-h | -s | -S filepath | -v stockdir [-p]]"
         print "         -h: show holded stocks in simple format"
         print "         -s: show selected stocks"
         print "         -v: show verbose info of this stock"
         print "         -S: set selected stocks file"
+        print "         -p: only for -v function, indicate using info in selected stocks"
         print ""
 
     def run(self):
@@ -27,10 +29,14 @@ class MoneySea:
 
     def input(self):
         try:
-            opts, args = getopt.getopt(sys.argv[1:], "hsv:S:", [])
+            opts, args = getopt.getopt(sys.argv[1:], "hsv:S:p", [])
         except:
             self.usage()
             sys.exit(2)
+
+        for o, a in opts:
+            if o == "-p":
+                Globals.get_instance().setOption(Config.OPTION_SELECTED)
 
         for o, a in opts:
             if o == "-h":

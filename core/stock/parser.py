@@ -96,6 +96,8 @@ class Parser:
                 continued = False
 
         startprofit = self._fh.get_year_report(ystart - 1).profit
+        if self._fh.get_year_report(end - 1).profit < 0.0001 or startprofit < 0.00001:
+            return (continued, -0.99)
         average = (self._fh.get_year_report(end - 1).profit/startprofit) ** (1.0 / ycount) - 1
         return (continued, average)
 
