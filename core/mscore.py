@@ -1,12 +1,14 @@
 # coding=utf-8
 from stock.parser import Parser
 from globals import Globals
+from config import Config
 
 class Core:
     def __init__(self):
         pass
 
     def holded(self):
+        Globals.get_instance().setOption(Config.OPTION_HOLDED)
         holded = Globals.get_instance().holded.holded
         
         liststocks = {}
@@ -29,6 +31,7 @@ class Core:
         pass
 
     def selected(self):
+        Globals.get_instance().setOption(Config.OPTION_SELECTED)
         items = Globals.get_instance().selectedItems()
         if items == None:
             print "No selected file is set"

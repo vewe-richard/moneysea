@@ -29,12 +29,16 @@ class Globals:
         except:
             self.rl = None
 
+        self.option = Config.OPTION_HOLDED
+
     def selectedItems(self):
         if self.rl != None:
             return self.rl.items
         else:
             return None
 
+    def setOption(self, option):
+        self.option = option
 
     @classmethod
     def get_instance(cls):
@@ -53,6 +57,13 @@ class Globals:
     def getstockprice(self, idx):
         #try find in current
         s = "%06d"%(idx)
+        if self.option == Config.OPTION_SELECTED:
+            try:
+                price = float(self.rl.items[s])
+                return price
+            except:
+                return 0
+
         try:
             price = float(self.holded.holded[s][4])
         except:
