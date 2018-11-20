@@ -12,7 +12,7 @@ class RankList(BaseParser):
         with open(self._filepath) as f:
             for line in f:
                 items = line.split()
-                if len(items) < 12:
+                if len(items) < 11:
                     continue
                 self.items[items[0]] = items[2]
 
