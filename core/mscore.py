@@ -26,6 +26,8 @@ class Core:
             if liststocks[summer] == None:
                 print "%9s,%8s"%(Globals.get_instance().sin.getname(int(summer)), summer)
                 continue
+            if Globals.get_instance().getstocktotal(int(summer)) < 10.0:
+                continue
             s = liststocks[summer]
             print Parser.summerFormat() % Parser.formatdata(s)
         pass
