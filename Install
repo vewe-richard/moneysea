@@ -1,0 +1,9 @@
+for Ubuntu 14.04, python 2.7
+sudo apt-get install python-pandas
+sudo apt-get install python-sklearn
+sudo pip install python-dateutil==1.5
+#StringIO(unicode(csv_data)) 
+
+
+
+
