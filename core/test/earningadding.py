@@ -31,12 +31,19 @@ class EarningAdding:
             items = f.split("-")
 
             psr = Parser(Config.STOCKS_PATH + "/" + f)
+
+            cox = psr._pershareearnings / Globals.get_instance().getstockprice3(items[1])
+#            adding = psr._continued[1]
+#            adding = psr.adding["adjacent 365"]
+            adding = psr.adding["profit2"]
+
             print ""
-            print items[1], Globals.get_instance().getstockprice3(items[1]), psr._pershareearnings, psr._continued[1]
-            if psr._continued[1] > 1.0 or psr._continued[1] < -0.5:
+            print items[1], Globals.get_instance().getstockprice3(items[1]), psr._pershareearnings, adding
+
+            if adding > 1.0 or adding < 0.0000001:
                 continue
-            ax.append(psr._continued[1])
-            ay.append(psr._pershareearnings / Globals.get_instance().getstockprice3(items[1]))
+            ax.append(adding)
+            ay.append(cox)
 
         print ax
         print ay
