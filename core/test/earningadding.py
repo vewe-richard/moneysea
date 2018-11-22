@@ -35,13 +35,23 @@ class EarningAdding:
             cox = psr._pershareearnings / Globals.get_instance().getstockprice3(items[1])
 #            adding = psr._continued[1]
 #            adding = psr.adding["adjacent 365"]
-            adding = psr.adding["profit2"]
+#            adding = psr.adding["profit2"]
+#            adding = psr.adding["average profit2"]
+            adding = psr.adding["in report"]
 
             print ""
             print items[1], Globals.get_instance().getstockprice3(items[1]), psr._pershareearnings, adding
 
-            if adding > 1.0 or adding < 0.0000001:
+            if adding > 1.2:
+                adding = 1.0
+            if cox > 0.20:
+                cox = 0.2
+
+            if adding < 0.0000001:
                 continue
+            if cox < 0.00001:
+                continue
+
             ax.append(adding)
             ay.append(cox)
 
@@ -51,6 +61,26 @@ class EarningAdding:
         nx = np.array(ax)
         ny = np.array(ay)
         plt.scatter(nx, ny, color='blue')
+
+        n = 5 
+        p = 0.10
+        ax = []
+        ay = []
+        for i in range(0, 20):
+            x = i / 20.0
+            y = ((1.08/(1 + x))**n)*0.10
+            if y > 0.2:
+                print "out of range:", x, y
+                y = 0.2
+            ax.append(x)
+            ay.append(y)
+
+        nx = np.array(ax)
+        ny = np.array(ay)
+#        plt.scatter(nx, ny, color='red')
+        plt.plot(nx, ny, color='red', linewidth=4)
+#        plt.plot(nx, regr.predict(nx.reshape(-1,1)), color='red', linewidth=4)
+
         plt.show()
         pass
 
