@@ -7,19 +7,19 @@ from config import Config
 from shutil import copyfile
 from globals import Globals
 
-
-
 class MoneySea:
     def __init__(self):
         pass
 
     def usage(self):
-        print "python __main__.py [-h | -s | -S filepath | -v stockdir [-p]]"
+        print "python __main__.py [-h | -s | -S filepath | -v stockdir [-p] | -u | -t]"
         print "         -h: show holded stocks in simple format"
         print "         -s: show selected stocks"
         print "         -v: show verbose info of this stock"
         print "         -S: set selected stocks file"
         print "         -p: only for -v function, indicate using info in selected stocks"
+        print "         -u: update price list"
+        print "         -t: run test"
         print ""
 
     def run(self):
@@ -29,7 +29,7 @@ class MoneySea:
 
     def input(self):
         try:
-            opts, args = getopt.getopt(sys.argv[1:], "hsv:S:p", [])
+            opts, args = getopt.getopt(sys.argv[1:], "hsv:S:put", [])
         except:
             self.usage()
             sys.exit(2)
@@ -51,6 +51,10 @@ class MoneySea:
                 except:
                     pass
                 copyfile(a, Config.SELECTED_PATH)
+            elif o == "-u":
+                self._core.updateprice()
+            elif o == "-t":
+                self._core.test()
         pass
 
 

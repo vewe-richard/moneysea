@@ -5,6 +5,7 @@ from os import listdir
 import os
 from config import Config
 from globals import Globals
+import json
 
 import urllib2
 
@@ -16,6 +17,7 @@ class PriceList:
 
         myurl='http://hq.sinajs.cn/list='
 
+        plist = {}
         for f in listdir(Config.STOCKS_PATH):
             fin = Config.STOCKS_PATH + "/" + f + "/finance"
             if not os.path.exists(fin):
@@ -38,10 +40,10 @@ class PriceList:
 
                 price = float(vals[2])
             except:
-                price = 0
-                pass
+                continue
 
-            print name, idy, price
+            plist[items[1]] = price
+        json.dump(plist, open(Config.OUTPUT_PRICELIST,'w'))
         pass
 
     def test(self):

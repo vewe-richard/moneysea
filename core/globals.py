@@ -6,6 +6,7 @@ from os.path import isfile, join
 
 from config import Config
 from fileparsers.ranklist import RankList
+import json
 
 class Globals:
     INSTANCE = None
@@ -30,6 +31,12 @@ class Globals:
             self.rl = None
 
         self.option = Config.OPTION_HOLDED
+
+        try:
+            self.pricelist = json.load(open(Config.OUTPUT_PRICELIST))
+        except:
+            self.pricelist = None
+
 
     def selectedItems(self):
         if self.rl != None:
@@ -71,6 +78,21 @@ class Globals:
 
         return price
 
+    def getstockprice2(self, idx):
+        s = "%06d"%(idx)
+        try:
+            price = float(self.pricelist[s])
+        except:
+            price = 0
+        return price
+
+    def getstockprice3(self, idx):
+        try:
+            price = float(self.pricelist[idx])
+        except:
+            price = 0
+        return price
+
     def getstocktotal(self, idx):
         s = "%06d"%(idx)
         try:
@@ -97,6 +119,8 @@ class Globals:
 
 if __name__ == "__main__":
     glb = Globals.get_instance()
-    print glb.sin.getname(300230)
-    print glb.getstockprice(300230)
+#    print glb.sin.getname(300230)
+#    print glb.getstockprice(300230)
+#    print glb.pricelist
+    print glb.getstockprice3("300230")
     pass

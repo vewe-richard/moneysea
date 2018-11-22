@@ -19,6 +19,9 @@ class Config:
     OPTION_HOLDED = 1
     OPTION_SELECTED = 2
 
+    OUTPUT = "output/"
+    OUTPUT_PRICELIST = "output/pricelist"
+
     #持续增长考察年份数
     CONTINUE_GROW_YEARS = 6
     #持续增长容许最多亏损

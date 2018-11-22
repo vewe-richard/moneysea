@@ -2,6 +2,9 @@
 from stock.parser import Parser
 from globals import Globals
 from config import Config
+from utils.pricelist import PriceList
+from test.earningadding import EarningAdding
+
 
 class Core:
     def __init__(self):
@@ -60,4 +63,14 @@ class Core:
     def verbose(self, stockdir):
         psr = Parser(stockdir)
         psr.outputVerbose()
+        pass
+
+    def updateprice(self):
+        pl = PriceList()
+        pl.run()
+        pass
+
+    def test(self):
+        ea = EarningAdding()
+        ea.run()
         pass
