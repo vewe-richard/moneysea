@@ -4,6 +4,8 @@ from globals import Globals
 from config import Config
 from utils.pricelist import PriceList
 from test.earningadding import EarningAdding
+from growinglist import GrowingList
+from stock.adjust import Adjust
 
 
 class Core:
@@ -34,6 +36,36 @@ class Core:
             s = liststocks[summer]
             print Parser.summerFormat() % Parser.formatdata(s)
         pass
+
+    def growinglist(self):
+        gl = GrowingList()
+        gl.run()
+        gl.output()
+        pass
+
+    def adjust(self, params):
+        print params
+        n = 0
+        p = 0
+        for item in params:
+            vals = item.split("=")
+            if vals[0] == "n":
+                print "n:", vals[1]
+                n = int(vals[1])
+            elif vals[0] == "p":
+                print "p:", vals[1]
+                p = float(vals[1])
+            else:
+                print "Error: see help"
+                return
+
+        if n == 0 or p == 0:
+            print "Please set n and p value"
+            return
+        print n, p
+        ad = Adjust(n, p)
+        ad.run()
+        ad.output()
 
     def selected(self):
         Globals.get_instance().setOption(Config.OPTION_SELECTED)

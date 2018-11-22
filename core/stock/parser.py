@@ -46,6 +46,7 @@ class Parser:
         self.adding["adjacent 365"] = adding
         #持续增长分析
         self._continued = self.continueParsing()
+        self.adding["average"] = self._continued[1]
         #增长加快评级
         self._increase_fasten = self.increaseAdding()
         #净资产收益率 
@@ -116,7 +117,7 @@ class Parser:
                 ystart = y
 
         startprofit = self._fh.get_year_report(ystart - 1).profit2
-        print "平均扣非净利率增长计算", startprofit, self._fh.get_year_report(end - 1).profit2, 
+        print "平均扣非净利率增长计算", startprofit, self._fh.get_year_report(end - 1).profit2
         if self._fh.get_year_report(end - 1).profit2 <= 0 or startprofit <= 0:
             return -0.99
         average = (self._fh.get_year_report(end - 1).profit2/startprofit) ** (1.0 / ycount) - 1

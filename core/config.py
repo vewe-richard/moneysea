@@ -27,5 +27,7 @@ class Config:
     #持续增长容许最多亏损
     ALLOW_MAX_LOSS = -0.10
 
+    ADDINGS = {"profit2", "average profit2", "in report", "adjacent 365", "average"}
+
     def __init__(self):
         pass

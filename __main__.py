@@ -20,6 +20,8 @@ class MoneySea:
         print "         -p: only for -v function, indicate using info in selected stocks"
         print "         -u: update price list"
         print "         -t: run test"
+        print "         -g: show earing adding list"
+        print "         -a: adjust n and p values [ -a n=val p=val ]"
         print ""
 
     def run(self):
@@ -29,7 +31,7 @@ class MoneySea:
 
     def input(self):
         try:
-            opts, args = getopt.getopt(sys.argv[1:], "hsv:S:put", [])
+            opts, args = getopt.getopt(sys.argv[1:], "hsv:S:pguta", [])
         except:
             self.usage()
             sys.exit(2)
@@ -55,6 +57,12 @@ class MoneySea:
                 self._core.updateprice()
             elif o == "-t":
                 self._core.test()
+            elif o == "-g":
+                self._core.growinglist()
+            elif o == "-a":
+                self._core.adjust(args)
+
+            break
         pass
 
 
