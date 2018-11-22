@@ -25,7 +25,7 @@ class Adjust:
             idx = items[1]
 
             psr = Parser(Config.STOCKS_PATH + "/" + f)
-            if psr._pershareearnings < 0.01:
+            if psr._pershareearnings < 0.001:
                 continue
 
             q = Globals.get_instance().getstockprice3(idx)
@@ -39,8 +39,9 @@ class Adjust:
             
 
             suitcount = 0
+            totaldelta = 0
             for val in psr.adding:
-                if val == "manual":
+                if not val in Config.ADDINGS:
                     continue
                 info = {}
 
@@ -54,8 +55,10 @@ class Adjust:
                 stock[val] = info
                 if delta > 0.001:
                     suitcount += 1
+                totaldelta += delta
 
             stock["count"] = suitcount
+            stock["avdelta"] = totaldelta / len(Config.ADDINGS)
             self.stocklists[idx] = stock
 
         pass
@@ -82,12 +85,22 @@ class Adjust:
             print "adding type: %10s"%adding, "\t suitable ",  counts[adding], "percent", counts[adding] * 1.0 / total
 
         print ""
+        total = 0
         for i in self.stocklists:
             item = self.stocklists[i]
-            if item["count"] < 5:
+            if item["count"] < len(Config.ADDINGS):
                 continue
-            print i, item["name"], item["earnings"], item["q"], item["eq"], item["count"]
+            print i, item["name"], item["earnings"], item["q"], item["eq"], item["count"], self.deltas(item), "\t\t", "%6.2f"%item["avdelta"]
+            total += 1
+        print "total", total
         pass
+
+    def deltas(self, item):
+        a = ""
+        for adding in Config.ADDINGS:
+            val = item[adding]
+            a += "-- %s:%6.2f, %6.2f, %6.2f -- "%(adding, val["a"], val["ref"], val["delta"])
+        return a
 
     def output(self):
         self.stastics()
