@@ -165,6 +165,8 @@ class Parser:
 
         earnings5 = earnings * ((1 + adding)**5)
         price10 = earnings5*100 / 10
+        if price10 < 0.0001:
+            return 
         avg = ((price10/price) ** (1.0 / 5)) - 1
         print "五年预期每股收益:%6.2f"%earnings5, "\t[10%", "Price]: %6.2f"%price10, "年均增长: %6.2f"%avg
 
