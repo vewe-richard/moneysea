@@ -173,7 +173,7 @@ class Parser:
 
     def outputVerbose(self):
         earnings = self.getpershareearnings()
-        price = Globals.get_instance().getstockprice(self.getid())
+        price = Globals.get_instance().getstockprice2(self.getid())
         print ""
         print self.getname(), "(", self.getid(), ")"
         print "Price:", price
